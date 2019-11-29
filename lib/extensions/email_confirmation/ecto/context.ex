@@ -3,6 +3,7 @@ defmodule PowEmailConfirmation.Ecto.Context do
   Handles e-mail confirmation context for user.
   """
   alias Pow.{Config, Ecto.Context}
+  alias Pow.Operations
   alias PowEmailConfirmation.Ecto.Schema
 
   @doc """
@@ -10,7 +11,7 @@ defmodule PowEmailConfirmation.Ecto.Context do
   """
   @spec get_by_confirmation_token(binary(), Config.t()) :: Context.user() | nil
   def get_by_confirmation_token(token, config),
-    do: Context.get_by([email_confirmation_token: token], config)
+    do: Operations.get_by([email_confirmation_token: token], config)
 
   @doc """
   Checks if the users current e-mail is unconfirmed.

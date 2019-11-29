@@ -4,6 +4,7 @@ defmodule PowInvitation.Ecto.Context do
   """
   alias Pow.{Config, Ecto.Context}
   alias PowInvitation.Ecto.Schema
+  alias Pow.Operations
 
   @doc """
   Creates an invited user.
@@ -40,7 +41,7 @@ defmodule PowInvitation.Ecto.Context do
   @spec get_by_invitation_token(binary(), Config.t()) :: Context.user() | nil
   def get_by_invitation_token(token, config) do
     [invitation_token: token]
-    |> Context.get_by(config)
+    |> Operations.get_by(config)
     |> case do
       %{invitation_accepted_at: nil} = user -> user
       _ -> nil
