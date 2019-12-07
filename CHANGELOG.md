@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.16 (TBA)
+
+### Enchancements
+
+* [`PowEmailConfirmation.Phoenix.ControllerCallbacks`] To prevent information leak, when a user tries to sign up and the email has already been taken the default e-mail confirmation required message will be shown
+
 ## v1.0.15 (2019-11-20)
 
 ### Enhancements

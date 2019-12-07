@@ -4,6 +4,8 @@ This extension will send an e-mail confirmation link when the user registers, an
 
 Users won't be signed in when they register, and can't sign in until the e-mail has been confirmed. The confirmation e-mail will be sent every time the sign in fails. The user will be redirected to `after_registration_path/1` and `after_sign_in_path/1` accordingly.
 
+If a user attempts to register with an already taken email, but all other params are valid, the user will see the same confirmation required message, but no e-mail will be sent. This prevents information leak.
+
 When users updates their e-mail, it won't be changed until the user has confirmed the new e-mail by clicking the e-mail confirmation link.
 
 ## Installation

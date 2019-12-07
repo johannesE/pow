@@ -40,6 +40,12 @@ defmodule PowEmailConfirmation.Phoenix.ControllerCallbacks do
 
     halt_unconfirmed(conn, {:ok, user, conn}, return_path)
   end
+  def before_respond(Pow.Phoenix.RegistrationController, :create, {:error, %{errors: [email: {"has already been taken", []}]}, conn}, _config) do
+    return_path = routes(conn).after_registration_path(conn)
+    conn        = redirect_and_show_error(conn, return_path)
+
+    {:halt, conn}
+  end
   def before_respond(Pow.Phoenix.SessionController, :create, {:ok, conn}, _config) do
     return_path = routes(conn).after_sign_in_path(conn)
 
@@ -64,12 +70,17 @@ defmodule PowEmailConfirmation.Phoenix.ControllerCallbacks do
 
     send_confirmation_email(user, conn)
 
-    conn =
-      conn
-      |> Phoenix.Controller.put_flash(:error, error)
-      |> Phoenix.Controller.redirect(to: return_path)
+    conn = redirect_and_show_error(conn, return_path)
 
     {:halt, conn}
+  end
+
+  defp redirect_and_show_error(conn, return_path) do
+    error = extension_messages(conn).email_confirmation_required(conn)
+
+    conn
+    |> Phoenix.Controller.put_flash(:error, error)
+    |> Phoenix.Controller.redirect(to: return_path)
   end
 
   defp warn_unconfirmed(%{params: %{"user" => %{"email" => email}}} = conn, %{unconfirmed_email: email} = user) do
