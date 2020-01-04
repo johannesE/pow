@@ -72,6 +72,16 @@ defmodule PowResetPassword.Phoenix.ResetPasswordControllerTest do
     end
   end
 
+  alias PowResetPassword.PowEmailConfirmation.TestWeb.Phoenix.Endpoint, as: ResetPasswordEndpoint
+  describe "create/2 with email confirmation" do
+    test "with invalid params", %{conn: conn} do
+      conn = Phoenix.ConnTest.dispatch(conn, ResetPasswordEndpoint, :post, Routes.pow_reset_password_reset_password_path(conn, :create, @invalid_params))
+
+      assert redirected_to(conn) == Routes.pow_session_path(conn, :new)
+      assert get_flash(conn, :info) == "If an account for the provided email exists, an email with reset instructions will be send to you. Please check your inbox."
+    end
+  end
+
   describe "edit/2" do
     @valid_token "valid"
     @invalid_token "invalid"

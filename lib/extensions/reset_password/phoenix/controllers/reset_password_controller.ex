@@ -4,6 +4,7 @@ defmodule PowResetPassword.Phoenix.ResetPasswordController do
 
   alias Plug.Conn
   alias PowResetPassword.{Phoenix.Mailer, Plug}
+  alias Pow.Extension.Config
 
   plug :require_not_authenticated
   plug :load_user_from_reset_token when action in [:edit, :update]
@@ -37,7 +38,7 @@ defmodule PowResetPassword.Phoenix.ResetPasswordController do
     |> redirect(to: routes(conn).session_path(conn, :new))
   end
   def respond_create({:error, _any, conn}) do
-    case registration_path?(conn) do
+    case permit_information_leak?(conn) do
       true ->
         conn
         |> assign(:changeset, Plug.change_user(conn, conn.params["user"]))
@@ -97,6 +98,20 @@ defmodule PowResetPassword.Phoenix.ResetPasswordController do
     email = Mailer.reset_password(conn, user, url)
 
     Pow.Phoenix.Mailer.deliver(conn, email)
+  end
+
+  defp permit_information_leak?(conn) do
+    cond do
+      email_confirmation_extension?(conn) -> false
+      registration_path?(conn)            -> true
+      true                                -> false
+    end
+  end
+
+  defp email_confirmation_extension?(conn) do
+    config = Pow.Plug.fetch_config(conn)
+
+    PowEmailConfirmation in Config.extensions(config)
   end
 
   defp registration_path?(conn) do
